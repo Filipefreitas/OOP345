@@ -1,0 +1,74 @@
+>> Questions
+1. list all the STL functions that you have used in this workshop; explain your reasoning for choosing each one, and not another.
+- accumulate: used to accumulate data values in the container;
+- count_if: used to count the occurrences of an artist in the song collection.
+- for_each: used to iterate over the container to output the value to the lambda expression; applied to cleanAlbum() and SongCollection::display(std::ostream& out) functions.
+- sort: used to sort the values in the container;
+They were chosen as I understood they were the more suitable ones to perform the tasks they perform in the code.
+
+2. present the advantages of using STL algorithms vs. implementing the functionality by yourself using loops.
+- Preventing common mistakes: with .begin() and .end(), for example, you know that the iterations is within the correct range, something we might failed at when writing a loop manually
+- Efficiency: those STL algorithms are optimized to work efficiently. 
+- Correctness: we are more subject to errors when implementing a loop manually, rather than using the pre-defined. 
+
+3. the function that sorts the collection of songs receives as a parameter the field name to use; this can create errors if the client specifies an invalid field (or misspells it). How would you redesign that function to prevent the client to specify an invalid string, allowing any error to be detected by the compiler?
+In this case, a invalid parameter will cause an undefined behavior. To fix this, I would have used a custom iterator or a custom comparator, since sort only throws exceptions in case The (1) element comparisons throw; 
+(2) The element swaps (or moves) throw
+(3) The operations on iterators throw
+source: http://www.cplusplus.com/reference/algorithm/sort/#exceptions.
+
+>> Learning outcomes
+In this workshop, I learnt how to copy data from a file into a sequential container. This was done in SongCollection::SongCollection(string fileName) function, inside a while loop, using the push_back() list class. It was responsible for adding element after the last element in the container:
+
+SongCollection::SongCollection(string fileName) 
+{
+	std::ifstream file(fileName);
+	if (!file) 
+	{
+		throw "Invalid file name.";
+		return;
+	}
+	while (file)
+	{
+		(...)
+		_collection.push_back(song);
+		(...)
+		file.close();
+	}
+
+I also learnt how to use the numeric library to accumulate data values. This was done in the void SongCollection::display(std::ostream& out) const function. It accumulates the playtime of the entire song collection and it was coded as below:
+void SongCollection::display(std::ostream& out) const 
+{
+	(...)
+	size_t sumTime = accumulate(_collection.begin(), _collection.end(), 0u, [](const size_t& sumLength, const Song& song) 
+	(...)
+}
+
+In addition, I understood how to use a lambda expression to specify an operation on each value in a data set. As mentioned above, this was used twice in this workshop. Note that the first one has no capture list, as per designed by the [] with no values inside them:
+(1) cleanAlbum: 
+void SongCollection::cleanAlbum() 
+{
+	for_each(_collection.begin(), _collection.end(), [](Song& song) { song._album = song._album == "[None]" ? "" : song._album; });
+} 
+
+(2) display:
+void SongCollection::display(std::ostream& out) const 
+{
+	for_each(_collection.begin(), _collection.end(), [&out](const Song & song) 
+	{
+		out << song << endl;
+	});
+(...)
+}
+
+Last, I comprehend how to use the algorithm library to sort data values. The sort function receives a string as a parameter, that entails which column should be sorted by. The structure works as it follows:
+void SongCollection::sort(string column)
+if (column == "title") 
+{
+	::sort(_collection.begin(), _collection.end(), [](const Song& front, const Song& after) 
+	{
+		return front._title < after._title;
+		});
+	}
+}
+(... else if to check other condition, and so on)

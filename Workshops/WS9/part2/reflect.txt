@@ -1,0 +1,101 @@
+>> QUESTIONS
+1. why was necessary to use binary files in this workshop and how did you use them
+Binary files are useful for reading/writing/transferring large amounts of data; one main advantage of it is that there is no conversion, insertion, extraction, or field operators;
+
+In this workshop, it was used for both reading and writing:
+- the std::istream class is used for reading binary files. 
+- the std::ostream class is used for writing binary files.
+For both cases, proper usage will be outlined in the learning outcomes examples section of this reflection.
+
+2. why would be important to bind a function to its arguments, and how was it useful in this workshop
+Bind() is used to provide/change the context of a function. manipulate the operation of a function according to the need.
+In this workshop, it was used to to bind the converter to some of the arguments. 
+
+> reading:
+void SecureData::restore(const char* file, char key)
+
+> wirintg:
+void SecureData::backup(const char* file) 
+
+> The converter:
+void converter(char* t, char key, int n, const Cryptor& c) 
+{
+	for (int i = 0; i < n; i++)
+		t[i] = c(t[i], key);
+}
+
+> Binding the converter:
+for (size_t i = 0; i < num; i++) 
+{
+	t[i] = thread(bind(converter, text + i * eachSection, key, (i < num - 1 ? eachSection : nbytes - eachSection * i), Cryptor())); 
+}
+
+3. the advantages of using multiple threads, and how did you accomplished multi-threading in this workshop
+Multi-threaded programming solution improves the elapsed time to complete execution by distributing independent tasks across separate hardware threads. Use of threads provides concurrency within a process, efficient communication, besides allowing the utilization of multiprocessor architectures to a greater scale and efficiency. So, its advantage relies in terms of performance, both in tasks and communications. The std::thread class template is defined in the <thread> header file.
+
+>> LEARNIG OUTCOMES
+In this workshop, I learnt how to process partitioned data on two or more threads. This was done in the SecureData::code function:
+void SecureData::code(char key) 
+{
+	const int num = 4;
+	int eachSection = this->nbytes / 4;
+	thread t[num];
+
+	for (size_t i = 0; i < num; i++) 
+	{
+		t[i] = thread(bind(converter, text + i * eachSection, key, (i < num - 1 ? eachSection : nbytes - eachSection * i), Cryptor())); 
+	}
+
+	for (size_t i = 0; i < num; i++) 
+	{
+		t[i].join();
+	}
+	encoded = !encoded;
+}
+
+2. I also learnt how to both read and write a set of characters to a file in binary mode:
+
+- the std::ostream class was used for writing binary files:
+void SecureData::backup(const char* file) 
+{
+	if (!text)
+		throw std::string("\n***No data stored***\n");
+	else if (!encoded)
+		throw std::string("\n***Data is not encoded***\n");
+	else
+	{
+		std::ofstream ofs(file, std::ofstream::binary);
+		ofs.write(text, nbytes);
+		ofs.close();
+	}
+}
+
+- the std::istream class was used for reading binary files:
+void SecureData::restore(const char* file, char key)
+{
+	std::ifstream ifs(file, std::ifstream::binary);
+	text = new char[nbytes + 1];
+	ifs.read(text, nbytes);
+	text[nbytes] = '\0';
+	(...)
+}
+
+Last, I learnt how to bind a function to its arguments. It is worth mentioning that join() returns when current object finishes its task.
+
+void SecureData::code(char key) 
+{
+	const int num = 4;
+	int eachSection = this->nbytes / 4;
+	thread t[num];
+
+	for (size_t i = 0; i < num; i++) 
+	{
+		t[i] = thread(bind(converter, text + i * eachSection, key, (i < num - 1 ? eachSection : nbytes - eachSection * i), Cryptor())); 
+	}
+
+	for (size_t i = 0; i < num; i++) 
+	{
+		t[i].join();
+	}
+	encoded = !encoded;
+}

@@ -1,0 +1,93 @@
+Name: Filipe da Cunha de Freitas
+Student ID: 155737190
+Date: 2021-03-06
+
+>> Questions
+1. Why do you need to deallocate the dynamically allocated memory in your vector?
+We do not need to. A vector have the ability to deallocate when the object goes out of scope; however, it is important to mention that a vector frees the memory it allocates within itself as part of being a dynamic array, which frees only the array of pointers, not the memory that they point to - so this has to be deallocated to prevent a memory leak. 
+
+2. When building an object from the input file, different things can go wrong: the record represents an unknown type of vehicle, or record contains invalid data. How can the function loadData() detect what went wrong? Can you think at another solution than the one you have implemented?
+In LoadData(), cerr as used to control an error in the case the program can not read the file - and this was provided by the professor in w6_p2.cpp file. I implemented a try-catch control to manage a error while reading the file; in addition, as per exercise outline, I added thrown exceptions in Vehicle *createInstance(std::istream &in) for the cases in which the type of vehicle is not recognized, and also when one of the fields in the record contains invalid data. In both cases, proper error messages are displayed, again fulfiling a request from the exercise. An alternative approach to it would be to have used return values for checking abnormal exits. There are two functions that initiate abnormal termination: void std::terminate() and void std::abort(). terminate() would be suitable in the case explored here.
+
+
+> Final code for loadData():
+void loadData(const char* filename, sdds::Autoshop& as)
+{
+	std::ifstream file(filename);
+	if (!file)
+	{
+		std::cerr << "ERROR: Cannot open file [" << filename << "].\n";
+		return;
+	}
+	while (file)
+	{
+        try 
+	{
+            sdds::Vehicle* aVehicle = sdds::createInstance(file);
+            if (aVehicle)
+                as += aVehicle;
+        	}
+		catch( std::string err) 
+		{
+           	 std::cout << err << std::endl;
+	        }
+	}
+}
+
+> Code for Vehicle *createInstance(std::istream &in) :
+    Vehicle *createInstance(std::istream &in) 
+    {
+        Vehicle *ptr = nullptr;
+        std::string temp;
+        getline(in, temp);
+        temp.erase(0, temp.find_first_not_of(' '));
+        std::stringstream line(temp);
+        if (!temp.empty()) 
+        {
+            if (temp[0] == 'c' || temp[0] == 'C') 
+            {
+                ptr = new Car(line);
+            } 
+            else if(temp[0] == 'r' || temp[0] == 'R') 
+            {
+                ptr = new Racecar(line);
+            }
+            else 
+            {
+                std::string tag{};
+                getline(line, tag, ',');
+                throw "Unrecognized record type: [" + tag + "]";
+            }
+        } 
+        else
+        {
+            ptr = nullptr;
+        }
+        return ptr;
+ 
+3. In this workshop you had to use std::list<sdds::Vehicle*> and std::vector<sdds::Vehicle*> to store a collection of vehicles as pointers. Could you have used std::list<sdds::Vehicle> and std::vector<sdds::Vehicle> instead? Justify your answer!
+I had to use std::vector<Vehicle*> to handle input dinamicaly, this was due to the fact I did not know the amount of vehicles would be read from the file. Note that the same approach was used in the template for unknown number of vehicles. In conclusion, std::vector<sdds::Vehicle> could not have been used here.
+
+>> Learning Outcomes
+In this workshop, I learnt how to manage polymorphic objects using the vector container of the STL. The vector created in this program (std::vector<Vehicle*>::iterator i) stored pointers to a base class and used push_back to move a dynamically allocated object into the vector.
+
+In addition, I also learnt how to move a dynamically allocated object into a container. This was by Autoshop& operator +=(Vehicle* theVehicle), since this member is responsible for adds the vehicle received as parameter into the m_vehicles vector. The push_back public member function is responsible for this action.
+
+> Code for Autoshop &Autoshop::operator+=(Vehicle *theVehicle):
+Autoshop &Autoshop::operator+=(Vehicle *theVehicle) 
+{
+	m_vehicles.push_back(theVehicle);
+        return *this;
+}
+
+Moreover, I absorbed code a range-based iteration on the objects in a container. This was done in std::vector<Vehicle*>::iterator i, in which case the loop traverse the object using being() and start() STL iterators.
+
+> Code for std::vector<Vehicle*>::iterator i:
+std::vector<Vehicle*>::iterator i;
+	for(i = m_vehicles.begin(); i != m_vehicles.end(); i++)
+	{
+            (*i)->display(out);
+            out << std::endl;
+        }
+
+Last, I grasped how to report and handle an exception. As explained previously, cerr, try-catch and thrown exceptions were used to manage this need.

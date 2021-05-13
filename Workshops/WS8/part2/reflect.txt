@@ -1,0 +1,57 @@
+>> QUESTIONS
+1. the advantage that smart pointer syntax provides. Use example from your code to support your explanation.
+
+The main advantage of using a smart pointer is to prevent memory leak, since smart pointers acquires ownership of the resource and manage memory deallocation for the resource automatically at the destruction time. 
+
+As an example from the workshop, we can consider the mergeSmart() function in the Utilities module - note that deallocation is not explicitly performed:
+
+List<Product> mergeSmart(const List<Description>& desc, const List<Price>& price) 
+{
+	List<Product> priceList;
+	for (size_t i = 0; i < desc.size(); ++i) 
+	{
+		for (size_t x = 0; x < price.size(); ++x) 
+		{
+			if (desc[i].code == price[x].code) 
+			{
+				std::unique_ptr<Product> p{ new Product(desc[i].desc, price[x].price) };
+				p->validate();
+				priceList += p;	
+			}
+		}
+	}
+	return priceList;
+}
+
+2. the difference between raw and smart pointer syntax in your solution.
+The difference is about the usage of a dereferencing operator(*)
+Let's compare the syntax considering what was done in the workshop:
+
+2.1 In the creation process
+-creating a raw pointer: 
+Product* p = new Product(desc[i].desc, price[x].price);
+
+-creating a smart pointer:
+std::unique_ptr<Product> p{new Product(desc[i].desc, price[x].price)};
+
+2.2 In the overloading process
+-operator += overload: a raw pointer as an incoming parameter
+void operator+=(const T* price) 
+{
+	list.push_back(*price);
+}
+
+-operator += overload: smart pointer as an argument:
+void operator+=(std::unique_ptr<T>& price) 
+{
+	list.push_back(*price);
+}                                            
+
+>> LEARNING OUTCOMES
+In this workshop, I learnt how to create a program component of quadratic complexity.  Both mergeRaw and mergeSmart were built in a nested loop structure, which configures a quadratic complexity solution - inner loop had efficiency of n, outer loop had efficiency of n, so the combined efficiency is multiply each nested loop, thus n2.
+
+Last, I learnt how to use a smart pointer to move an object. This was done with the overloading +=, whose code is displayed below:
+void operator+=(std::unique_ptr<T>& price) 
+{
+	list.push_back(*price);
+}
