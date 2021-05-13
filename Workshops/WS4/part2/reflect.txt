@@ -1,0 +1,51 @@
+// Name:  Filipe Freitas
+// Seneca Student ID: 155737190
+// Seneca email:  fda-cunha-de-freitas@myseneca.ca
+// Date of completion: 2021-02-13
+
+>> The difference between the implementations of a composition and an aggregation.
+Aggregation and composition are specific cases of association. In both cases, object of one class owns an object of another class. The difference is that aggregation implies in a relationship in which the child can exist independently of the parent (it is a "has a" relationship), whereas in composition the child can't exist independently of the parent, also being responsible for the lifetime of the object. 
+
+>> The difference between the implementations of move and copy functions in a composition and an aggregation.
+Implementing an aggregation is almost identical to implementing a composition. In composition, we add the parts of the composition using normal member variables. In an aggregation, the member variables are also added; however, they are tipically references or pointers that are used to point at objects that have been created outside the scope of the class. In other words, in a composition, the container object owns the contained one, whereas in aggregation, it references it.
+
+An example of aggregation in this workshop is ConfirmationSender to Reservation. The child class Reservation can exist without ConfirmationSender. Note that ConfirmationSender "has a" Reservation onject.
+class ConfirmationSender
+    {
+        const Reservation** cs_res_arr;
+        size_t cs_count =  0;
+
+    public:
+        ConfirmationSender();
+        ~ConfirmationSender();
+        ConfirmationSender(const ConfirmationSender& cs);
+        ConfirmationSender(ConfirmationSender&& cs) noexcept;
+        ConfirmationSender& operator+=(const Reservation& res);
+        ConfirmationSender& operator-=(const Reservation& res);
+        ConfirmationSender& operator=(const ConfirmationSender& cs);
+        friend ostream& operator<<(ostream&, ConfirmationSender&);
+    };
+
+The composition example can be found in the Restaurant module, in which the child class Reservation is part of the parent class.
+class Restaurant
+{
+	Reservation* rest_reserves = nullptr;
+        int rest_num = 0;
+
+    public:
+        Restaurant();
+        ~Restaurant();
+        Restaurant(const Reservation* reservations[], size_t count);
+        Restaurant(const Restaurant& res);
+        Restaurant(Restaurant&& res) noexcept;
+        Restaurant& operator =(const Restaurant& res); 
+        Restaurant& operator =(Restaurant&& res) noexcept;
+        size_t size() const;
+        friend ostream& operator<<(ostream&, const Restaurant&);
+};
+
+In this workshop, I also learnt how to design and code a class that manages a dynamically allocated array of pointers to objects. The constructor Restaurant(const Reservation* reservations[], size_t cnt), located in the Restaurant module was implemented accordingly, as per instructions of the exercise (each element of the Reservation array is a pointer, the constructor stores copies of the elements).
+
+In addition, I learnt how to use use member functions of the string class to parse a string into tokens based on simple rules. This was done by the Reservation(const std::string& res) constructor. It reads all strings string id, name, email, people, day, hour and extract them with the std functions string::substr(), string::find(), string::erase(), and stoi().
+
+Last, I found I successfully meet the outcome of designing and code a class that manages a dynamically allocated array of pointers to objects. The confirmationSender module was accordingly designed to maintain a dynamically allocated array of pointers to objects of type Reservation.

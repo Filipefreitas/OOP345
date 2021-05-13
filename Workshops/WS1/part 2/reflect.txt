@@ -1,0 +1,7 @@
+// Name:  Filipe Freitas
+// Seneca Student ID: 155737190
+// Seneca email:  fda-cunha-de-freitas@myseneca.ca
+// Date of completion: 2021-01-23
+
+In workshop 1, I have firstly refreshed some C++ programming language structures, such as classes, io manipulators, both function definition and declaration. In addition, I learnt how to receive program arguments from the command line, which was done by defining the main function as ”int main(int argc, char* argv[])” and setting the debugging properties In visual studio accordingly. On matrix, the input files are entered using a line command. In all files, I follow the one definition rule, in order to prevent duplication in a translation unit.
+In addition, I learnt how to access a variable defined in a different translation unit, using the C++ keyword extern, this was used with the g_sysClock variable, used in all files of the program. I also learnt how to declare a local variable that resides in memory throughout the lifetime of the program. This was done by using the C++ keyword static, and it was used in the counter variable i in the event.cpp file.

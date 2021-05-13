@@ -1,0 +1,12 @@
+// Name:  Filipe Freitas
+// Seneca Student ID: 155737190
+// Seneca email:  fda-cunha-de-freitas@myseneca.ca
+// Date of completion: 2021-01-30
+
+In this workshop, I learnt how to retrieve records from a text file using an input file stream object. This was done in the one argument constructor that receives a const char with the file name as its argument. Then a while loop get all the records until the end of the file using getline, in which situation the number of the rows in the text file is being counted and store in the unsigned int member variable m_noOf_record. A new memory is allocated for each record in the file; finally, the file is closed once the program reaches the end of the file. The query size_t size() receives an index as argument and it is used to retrieve the information of a particular record.
+
+I also learnt how to use the std::chrono library to monitor the time spent on a particular task. The chrono::steady_clock::now() is stored twice in different moments of the application: the startClock calls it and save in the start time variable; the stopClock is called to register the time again and store it in the end time variable; therefore, the duration was easily calculated by the difference between the end time and the start time. This task is performed by the modifier addEvent().
+
+In addition, I learnt how to implement both copy and move semantics for a class with a resource. There is a copy constructor StringSet::StringSet(StringSet& obj) and a move constructor StringSet::StringSet (StringSet&& obj) designed to perform that task. 
+
+Finally, I was able identify the processing-intensive operations in copy and move assignments. Move operations proved to be considerately faster than copying operations. This happens because moving data only required the transference of the value or pointer to another object, without duplicating the content itself.
